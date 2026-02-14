@@ -3,102 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BÓRẞÕÑ Chat Support</title>
+    <title>BÓRẞÕÑ Chat</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* 🎨 WhatsApp Style CSS */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #e5ddd5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        /* --- Header --- */
-        .header { background-color: #008069; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; height: 60px; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ccc; background-size: cover; background-position: center; }
-        .chat-info h3 { font-size: 16px; font-weight: 500; margin: 0; }
-        .chat-info p { font-size: 12px; opacity: 0.8; margin: 0; }
-        .back-btn { display: none; font-size: 20px; cursor: pointer; margin-right: 10px; }
-
-        /* --- Chat Area --- */
-        #chat-container { flex: 1; overflow-y: auto; padding: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; display: flex; flex-direction: column; gap: 5px; }
+        /* --- Mobile Reset & Layout --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        /* --- Message Bubbles --- */
-        .msg { max-width: 75%; padding: 8px 10px; border-radius: 8px; font-size: 14.5px; position: relative; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 5px; }
+        html, body {
+            height: 100%; /* পুরো স্ক্রিন */
+            width: 100%;
+            overflow: hidden; /* বাইরে স্ক্রল বন্ধ */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #e5ddd5;
+        }
+
+        /* পুরো অ্যাপ কন্টেইনার */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 600px; /* পিসিতে খুব বেশি চওড়া হবে না */
+            margin: 0 auto;
+            background: #efe7dd;
+            position: relative;
+        }
+
+        /* --- Header (Fixed Top) --- */
+        .header {
+            flex-shrink: 0; /* এটা কখনো ছোট হবে না */
+            height: 60px;
+            background-color: #008069;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .header img { width: 38px; height: 38px; border-radius: 50%; margin-right: 10px; background: #ddd; }
+        .header-info h3 { font-size: 17px; font-weight: 500; margin-bottom: 2px; }
+        .header-info p { font-size: 12px; opacity: 0.85; }
+
+        /* --- Chat List (Middle Area) --- */
+        #chat-container {
+            flex: 1; /* বাকি সব জায়গা এটা নেবে */
+            overflow-y: auto; /* শুধু এই জায়গাটা স্ক্রল হবে */
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-size: 300px; /* প্যাটার্ন সাইজ ফিক্স */
+        }
+
+        /* --- Messages --- */
+        .msg {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            font-size: 15px; /* ফন্ট সাইজ বড় করা হয়েছে */
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
         .msg.sent { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 0; }
         .msg.received { background-color: white; align-self: flex-start; border-top-left-radius: 0; }
-        .msg img { max-width: 100%; border-radius: 5px; margin-top: 5px; display: block; }
-        .time { font-size: 10px; color: #999; text-align: right; margin-top: 2px; display: block; }
+        .msg img { max-width: 100%; border-radius: 5px; margin-top: 5px; }
+        .time { font-size: 10px; color: #999; text-align: right; margin-top: 3px; display: block; }
 
-        /* --- Input Area --- */
-        .input-area { background: #f0f0f0; padding: 5px 10px; display: flex; align-items: center; gap: 8px; min-height: 60px; }
-        .input-area input { flex: 1; padding: 10px 15px; border-radius: 20px; border: none; outline: none; font-size: 15px; background: white; }
-        .icon-btn { font-size: 20px; color: #555; padding: 10px; cursor: pointer; }
-        .send-btn { background: #008069; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; font-size: 18px; cursor: pointer; }
+        /* --- Input Area (Fixed Bottom) --- */
+        .input-area {
+            flex-shrink: 0; /* এটা কখনো ছোট হবে না */
+            background: #f0f0f0;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 60px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            font-size: 16px; /* ইনপুট টেক্সট বড় */
+            background: white;
+        }
 
-        /* --- Admin User List (Only for you) --- */
-        #admin-panel { display: none; flex: 1; background: white; overflow-y: auto; }
-        .user-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
-        .user-item:hover { background: #f5f5f5; }
-        .user-item .avatar { background: #008069; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .unread-dot { width: 10px; height: 10px; background: red; border-radius: 50%; margin-left: auto; display: none; }
-        .active-user { background-color: #e8f5e9; }
+        .icon-btn { font-size: 22px; color: #555; padding: 8px; cursor: pointer; }
+        .send-btn { 
+            background: #008069; color: white; border: none; 
+            width: 45px; height: 45px; border-radius: 50%; 
+            font-size: 18px; display: flex; align-items: center; justify-content: center;
+        }
 
-        /* --- Modal (Login) --- */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-box { background: white; padding: 25px; border-radius: 10px; width: 85%; max-width: 350px; text-align: center; }
-        .modal-box input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .modal-box button { background: #008069; color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%; font-size: 16px; }
+        /* --- Login Modal --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; display: flex; align-items: center; justify-content: center; }
+        .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 12px; text-align: center; }
+        .modal-box input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .modal-box button { background: #008069; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; }
 
-        /* Helpers */
+        /* --- Admin Panel --- */
+        #admin-panel { display: none; flex: 1; overflow-y: auto; background: white; }
+        .user-item { padding: 15px; border-bottom: 1px solid #f1f1f1; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .user-item:active { background: #f5f5f5; }
+        .user-avatar { width: 45px; height: 45px; background: #008069; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="loginModal" class="modal">
-        <div class="modal-box">
-            <h2 style="color: #008069;">স্বাগতম!</h2>
-            <p>চ্যাট করতে আপনার নাম লিখুন</p>
-            <input type="text" id="usernameInput" placeholder="আপনার নাম...">
-            <button onclick="startApp()">শুরু করুন</button>
-            <p style="font-size: 10px; margin-top: 10px; color: #888;">🔒 End-to-End Secure Chat</p>
+    <div id="app">
+        
+        <div id="loginModal" class="modal">
+            <div class="modal-box">
+                <h2 style="color: #008069; margin-bottom: 5px;">স্বাগতম</h2>
+                <p style="color: #666; font-size: 14px;">চ্যাট করতে আপনার নাম দিন</p>
+                <input type="text" id="usernameInput" placeholder="আপনার নাম..." autocomplete="off">
+                <button onclick="startApp()">শুরু করুন</button>
+            </div>
         </div>
-    </div>
 
-    <div class="header">
-        <div class="header-left">
-            <i class="fas fa-arrow-left back-btn" id="backBtn" onclick="goBackToAdmin()"></i>
-            <div class="avatar" id="headerAvatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png');"></div>
-            <div class="chat-info">
+        <div class="header">
+            <div id="backBtn" class="icon-btn hidden" onclick="closeChat()" style="color: white; margin-right: 5px; padding-left: 0;">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar">
+            <div class="header-info">
                 <h3 id="headerName">BÓRẞÕÑ (Admin)</h3>
                 <p id="headerStatus">online</p>
             </div>
         </div>
-    </div>
 
-    <div id="admin-panel">
+        <div id="admin-panel"></div>
+
+        <div id="chat-container"></div>
+
+        <div id="inputSection" class="input-area">
+            <label for="imgInput"><i class="fas fa-camera icon-btn"></i></label>
+            <input type="file" id="imgInput" hidden accept="image/*" onchange="sendImage(this)">
+            
+            <input type="text" id="msgInput" placeholder="মেসেজ..." autocomplete="off">
+            <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
 
-    <div id="chat-container"></div>
-
-    <div class="input-area" id="inputSection">
-        <label for="imgInput">
-            <i class="fas fa-camera icon-btn"></i>
-        </label>
-        <input type="file" id="imgInput" accept="image/*" hidden onchange="handleImage(this)">
-        
-        <input type="text" id="msgInput" placeholder="মেসেজ লিখুন..." onkeypress="if(event.key==='Enter') sendMessage()">
-        
-        <button class="send-btn" onclick="sendMessage()">
-            <i class="fas fa-paper-plane"></i>
-        </button>
     </div>
 
     <script>
-        // 🔴🔴 তোমার FIREBASE CONFIG এখানে বসাও 🔴🔴
+        // 🔥 কনফিগ (তোমার আগেরটাই আছে)
         const firebaseConfig = {
             apiKey: "AIzaSyBEiUjtqLlT_cMCE0ba9mweak5QQp915vQ",
             authDomain: "borson-chat-web.firebaseapp.com",
@@ -109,208 +170,134 @@
             appId: "1:694928126106:web:d02ab12ed214accd335528"
         };
 
-        // Firebase Init
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Variables
         let myName = "";
-        let myID = localStorage.getItem("myChatID") || "user_" + Date.now();
-        localStorage.setItem("myChatID", myID); // ID সেভ রাখা হচ্ছে যাতে পেজ রিলোড দিলে চ্যাট না হারায়
-        
+        let myID = localStorage.getItem("myID") || "uid_" + Date.now();
+        localStorage.setItem("myID", myID);
         let isAdmin = false;
-        let currentChatUser = null; // অ্যাডমিন যার সাথে চ্যাট করছে
+        let currentChatID = null;
 
-        // অ্যাপ শুরু
         function startApp() {
-            const inputName = document.getElementById('usernameInput').value.trim();
-            if (!inputName) return alert("নাম দিতে হবে!");
-
-            myName = inputName;
+            const name = document.getElementById('usernameInput').value.trim();
+            if(!name) return alert("নাম লিখুন!");
+            
+            myName = name;
             document.getElementById('loginModal').style.display = 'none';
 
-            // 🔐 সিক্রেট অ্যাডমিন লগইন (নাম যদি 'admin123' হয়)
-            if (myName === "borson_admin") {
+            if(myName === "borson_admin") { // পাসওয়ার্ড হিসেবে নাম 'borson_admin'
                 isAdmin = true;
-                setupAdminView();
+                showAdminPanel();
             } else {
-                setupUserView();
+                initUserChat();
             }
         }
 
-        // --- 👤 ফ্যানদের জন্য সেটআপ ---
-        function setupUserView() {
-            // ফ্যান শুধু অ্যাডমিনের সাথে চ্যাট করবে
-            // ফ্যানদের জন্য 'currentChatUser' হলো 'admin' (কিন্তু ডেটাবেসে তার নিজের ID তে সেভ হবে)
+        // --- User Mode ---
+        function initUserChat() {
             loadMessages(myID);
-            
-            // ইউজারের নাম ডেটাবেসে আপডেট করা
-            db.ref('users/' + myID).update({
-                name: myName,
-                lastMsg: "Joined chat",
-                time: Date.now()
-            });
+            db.ref('users/'+myID).update({ name: myName, lastMsg: "Joined", time: Date.now() });
         }
 
-        // --- 👑 অ্যাডমিনের জন্য সেটআপ ---
-        function setupAdminView() {
+        // --- Admin Mode ---
+        function showAdminPanel() {
             document.getElementById('chat-container').classList.add('hidden');
             document.getElementById('inputSection').classList.add('hidden');
             document.getElementById('admin-panel').style.display = 'block';
-            document.getElementById('headerName').innerText = "Inbox List";
-            document.getElementById('headerStatus').innerText = "Select a fan to chat";
-            document.getElementById('headerAvatar').style.display = 'none';
+            document.getElementById('headerName').innerText = "Inbox";
+            document.getElementById('headerStatus').innerText = "All messages";
 
-            // সব ইউজারদের লিস্ট লোড করা
-            db.ref('users').on('value', (snapshot) => {
+            db.ref('users').on('value', snap => {
                 const list = document.getElementById('admin-panel');
                 list.innerHTML = "";
-                
-                snapshot.forEach((child) => {
-                    const uData = child.val();
-                    const uid = child.key;
-
+                snap.forEach(child => {
+                    const u = child.val();
                     const div = document.createElement('div');
                     div.className = 'user-item';
                     div.innerHTML = `
-                        <div class="avatar">${uData.name.charAt(0).toUpperCase()}</div>
+                        <div class="user-avatar">${u.name[0].toUpperCase()}</div>
                         <div>
-                            <h4>${uData.name}</h4>
-                            <p style="font-size:12px; color:#666;">${uData.lastMsg || 'No message'}</p>
+                            <h4 style="margin-bottom:3px">${u.name}</h4>
+                            <p style="font-size:13px; color:#666">${u.lastMsg || ''}</p>
                         </div>
                     `;
-                    div.onclick = () => openChatAsAdmin(uid, uData.name);
+                    div.onclick = () => openChat(child.key, u.name);
                     list.appendChild(div);
                 });
             });
         }
 
-        // অ্যাডমিন যখন কোনো ফ্যানের চ্যাট ওপেন করবে
-        function openChatAsAdmin(uid, name) {
-            currentChatUser = uid; // এখন আমরা এই ইউজারের ID তে মেসেজ পাঠাবো
-            
+        function openChat(uid, name) {
+            currentChatID = uid;
             document.getElementById('admin-panel').style.display = 'none';
             document.getElementById('chat-container').classList.remove('hidden');
             document.getElementById('inputSection').classList.remove('hidden');
-            document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('headerAvatar').style.display = 'block';
+            document.getElementById('backBtn').classList.remove('hidden');
             document.getElementById('headerName').innerText = name;
-            
+            document.getElementById('headerStatus').innerText = "online";
             loadMessages(uid);
         }
 
-        // অ্যাডমিন লিস্টে ফিরে যাওয়া
-        function goBackToAdmin() {
-            currentChatUser = null;
-            setupAdminView();
-            document.getElementById('backBtn').style.display = 'none';
+        function closeChat() {
+            currentChatID = null;
+            showAdminPanel();
+            document.getElementById('backBtn').classList.add('hidden');
         }
 
-        // --- 📩 মেসেজ লোড এবং পাঠানো ---
-        
-        let msgListenerRef = null;
-
-        function loadMessages(chatPathID) {
-            const chatBox = document.getElementById('chat-container');
-            chatBox.innerHTML = ""; // আগের মেসেজ ক্লিয়ার
+        // --- Core Functions ---
+        let msgRef;
+        function loadMessages(uid) {
+            const box = document.getElementById('chat-container');
+            box.innerHTML = "";
+            if(msgRef) msgRef.off();
             
-            if (msgListenerRef) msgListenerRef.off(); // আগের লিসেনার বন্ধ
-
-            msgListenerRef = db.ref('messages/' + chatPathID);
-            
-            msgListenerRef.limitToLast(50).on('child_added', (snap) => {
+            msgRef = db.ref('messages/' + uid);
+            msgRef.limitToLast(50).on('child_added', snap => {
                 const data = snap.val();
+                let isMe = (isAdmin && data.sender === 'Admin') || (!isAdmin && data.sender !== 'Admin');
                 
-                // মেসেজটা কি আমি দিয়েছি?
-                // যদি আমি অ্যাডমিন হই, এবং sender 'Admin' হয় -> Sent
-                // যদি আমি ইউজার হই, এবং sender আমার নাম হয় -> Sent
-                let isMe = false;
-                if (isAdmin && data.sender === 'Admin') isMe = true;
-                if (!isAdmin && data.sender !== 'Admin') isMe = true;
-
                 const div = document.createElement('div');
                 div.className = `msg ${isMe ? 'sent' : 'received'}`;
                 
-                let content = data.text;
-                if (data.type === 'image') {
-                    content = `<img src="${data.text}" onclick="window.open(this.src)">`;
+                if(data.type === 'img') {
+                    div.innerHTML = `<img src="${data.text}"> <span class="time">${getTime(data.time)}</span>`;
+                } else {
+                    div.innerHTML = `${data.text} <span class="time">${getTime(data.time)}</span>`;
                 }
-
-                div.innerHTML = `
-                    ${content}
-                    <span class="time">${new Date(data.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-                `;
-                chatBox.appendChild(div);
-                chatBox.scrollTop = chatBox.scrollHeight;
+                box.appendChild(div);
+                box.scrollTop = box.scrollHeight;
             });
         }
 
         function sendMessage() {
-            const input = document.getElementById('msgInput');
-            const text = input.value.trim();
-            
-            // কোথায় মেসেজ পাঠাবো?
-            // অ্যাডমিন হলে -> currentChatUser এর ফোল্ডারে
-            // ফ্যান হলে -> myID এর ফোল্ডারে
-            const targetID = isAdmin ? currentChatUser : myID;
+            const inp = document.getElementById('msgInput');
+            const txt = inp.value.trim();
+            const target = isAdmin ? currentChatID : myID;
+            if(!target || !txt) return;
 
-            if (!targetID) return; 
-
-            if (text) {
-                pushMessage(targetID, text, 'text');
-                input.value = "";
-            }
+            pushMsg(target, txt, 'text');
+            inp.value = "";
         }
 
-        function handleImage(input) {
+        function sendImage(input) {
             const file = input.files[0];
-            if (!file) return;
-
-            // ইমেজ ছোট করা (কমপ্রেশন) যাতে ডেটাবেস ফাস্ট থাকে
+            if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    // ম্যাক্স সাইজ ৫০০px
-                    const maxWidth = 500; 
-                    const scale = maxWidth / img.width;
-                    canvas.width = maxWidth;
-                    canvas.height = img.height * scale;
-                    
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // Base64 স্ট্রিং পাওয়া
-                    const base64Str = canvas.toDataURL('image/jpeg', 0.7);
-                    
-                    // মেসেজ পাঠানো
-                    const targetID = isAdmin ? currentChatUser : myID;
-                    pushMessage(targetID, base64Str, 'image');
-                }
-            }
+            reader.onload = e => {
+                const target = isAdmin ? currentChatID : myID;
+                if(target) pushMsg(target, e.target.result, 'img');
+            };
             reader.readAsDataURL(file);
         }
 
-        function pushMessage(pathID, content, type) {
-            const senderName = isAdmin ? "Admin" : myName;
-            
-            db.ref('messages/' + pathID).push({
-                text: content,
-                sender: senderName,
-                type: type, // 'text' or 'image'
-                time: Date.now()
-            });
-
-            // লাস্ট মেসেজ আপডেট করা (লিস্টের জন্য)
-            db.ref('users/' + pathID).update({
-                lastMsg: type === 'image' ? 'Sent a photo 📷' : (isAdmin ? 'You: ' + content : content),
-                time: Date.now()
-            });
+        function pushMsg(uid, content, type) {
+            const sender = isAdmin ? "Admin" : myName;
+            db.ref('messages/' + uid).push({ text: content, sender: sender, type: type, time: Date.now() });
+            db.ref('users/' + uid).update({ lastMsg: type==='img'?'Sent photo 📷':content, time: Date.now() });
         }
 
+        function getTime(ts) { return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
     </script>
 </body>
 </html>
