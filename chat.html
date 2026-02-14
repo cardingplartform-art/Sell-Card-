@@ -1,196 +1,127 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BÓRẞÕÑ Creator Chat</title><style>
-body{
-  margin:0;
-  font-family: Arial, Helvetica, sans-serif;
-  background:#0b141a;
-  color:white;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WhatsApp Lite - BÓRẞÕÑ</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-/* Watermark */
-body::after{
-  content:"BÓRẞÕÑ PRIVATE CHAT";
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:40px;
-  color:rgba(255,255,255,0.05);
-  pointer-events:none;
-  z-index:0;
-}
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: #d1d7db; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-.header{
-  background:#202c33;
-  padding:15px;
-  font-size:18px;
-  font-weight:bold;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+        /* Header */
+        .header { background: #008069; color: white; padding: 12px 16px; display: flex; align-items: center; z-index: 10; }
+        .header-info { margin-left: 10px; }
+        .header-info h4 { font-size: 16px; }
+        .header-info p { font-size: 12px; opacity: 0.9; }
 
-.badge{
-  background:#25d366;
-  color:black;
-  padding:2px 6px;
-  border-radius:6px;
-  font-size:12px;
-}
+        /* Chat Area */
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; gap: 8px; }
 
-.chat-box{
-  height:65vh;
-  overflow-y:auto;
-  padding:15px;
-}
+        /* Messages */
+        .msg { padding: 8px 12px; border-radius: 8px; max-width: 80%; font-size: 14.5px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); word-wrap: break-word; }
+        .my-msg { background: #d9fdd3; align-self: flex-end; border-top-right-radius: 0; }
+        .other-msg { background: #ffffff; align-self: flex-start; border-top-left-radius: 0; }
+        .sender { font-size: 11px; font-weight: bold; color: #128c7e; display: block; }
+        .time { font-size: 10px; color: #667781; float: right; margin-top: 5px; margin-left: 8px; }
 
-.msg{
-  max-width:70%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:10px;
-  position:relative;
-}
+        /* Input area */
+        .input-area { background: #f0f2f5; padding: 10px; display: flex; gap: 10px; align-items: center; }
+        input#msgInput { flex: 1; padding: 12px; border-radius: 25px; border: none; outline: none; }
+        .send-btn { background: #00a884; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; }
 
-.user{
-  background:#005c4b;
-  margin-left:auto;
-}
+        /* Name Selection Popup */
+        #name-modal { position: fixed; inset: 0; background: #f0f2f5; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        #name-modal input { padding: 12px; width: 80%; max-width: 300px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; }
+        #name-modal button { background: #00a884; color: white; border: none; padding: 10px 30px; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-.creator{
-  background:#202c33;
-}
+    <div id="name-modal">
+        <h2 style="margin-bottom: 15px;">BÓRẞÕÑ Fans Chat</h2>
+        <input type="text" id="usernameInput" placeholder="আপনার নাম লিখুন..." maxlength="15">
+        <button onclick="joinChat()">শুরু করুন</button>
+    </div>
 
-.input-bar{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#202c33;
-  padding:10px;
-  display:flex;
-  gap:8px;
-}
+    <div class="header">
+        <div style="width: 40px; height: 40px; background: #eee; border-radius: 50%;"></div>
+        <div class="header-info">
+            <h4>BÓRẞÕÑ (Official)</h4>
+            <p>অনলাইন</p>
+        </div>
+    </div>
 
-input,textarea{
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  outline:none;
-}
+    <div id="chat-box"></div>
 
-textarea{
-  flex:1;
-  resize:none;
-}
+    <div class="input-area">
+        <input type="text" id="msgInput" placeholder="মেসেজ লিখুন..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
 
-button{
-  background:#25d366;
-  border:none;
-  padding:10px 15px;
-  border-radius:8px;
-  cursor:pointer;
-}
+    <script>
+        // তোমার স্ক্রিনশট থেকে পাওয়া কনফিগ
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEiUjtqLlT_cMCE0ba9mweak5QQp915vQ",
+            authDomain: "borson-chat-web.firebaseapp.com",
+            databaseURL: "https://borson-chat-web-default-rtdb.firebaseio.com",
+            projectId: "borson-chat-web",
+            storageBucket: "borson-chat-web.firebasestorage.app",
+            messagingSenderId: "694928126106",
+            appId: "1:694928126106:web:d02ab12ed214accd335528"
+        };
 
-.top-form{
-  padding:10px;
-  background:#111b21;
-  display:flex;
-  gap:10px;
-}
+        // Firebase ইনিশিয়ালাইজ
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let username = "";
 
-label{
-  font-size:12px;
-}
+        // চ্যাটে জয়েন করা
+        function joinChat() {
+            const input = document.getElementById('usernameInput').value.trim();
+            if(input) {
+                username = input;
+                document.getElementById('name-modal').style.display = 'none';
+            }
+        }
 
-/* Disable text select */
-*{
-  user-select:none;
-}
+        // মেসেজ পাঠানো
+        function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if(text && username) {
+                db.ref('messages').push({
+                    name: username,
+                    msg: text,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
+                input.value = "";
+            }
+        }
 
-img, audio{
-  max-width:100%;
-  border-radius:8px;
-  margin-top:5px;
-}
+        // লাইভ মেসেজ আপডেট
+        db.ref('messages').limitToLast(100).on('child_added', (snap) => {
+            const data = snap.val();
+            const box = document.getElementById('chat-box');
+            const isMe = data.name === username;
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${isMe ? 'my-msg' : 'other-msg'}`;
+            msgDiv.innerHTML = `
+                ${!isMe ? `<span class="sender">${data.name}</span>` : ''}
+                ${data.msg}
+                <span class="time">${data.time}</span>
+            `;
+            box.appendChild(msgDiv);
+            box.scrollTop = box.scrollHeight;
+        });
 
-.priority{
-  border:2px solid gold;
-}
-</style></head><body><div class="header">
-  BÓRẞÕÑ
-  <span class="badge">✔ Verified</span>
-</div><!-- Name + Anonymous Toggle --><div class="top-form">
-  <input id="name" placeholder="Your name">
-  <label>
-    <input type="checkbox" id="anon"> Anonymous
-  </label>
-</div><!-- Chat Area --><div class="chat-box" id="chatBox"></div><!-- Input Bar --><div class="input-bar">
-  <textarea id="msg" placeholder="Type message..."></textarea>
-  <input type="file" id="imgInput" accept="image/*">
-  <input type="file" id="voiceInput" accept="audio/*">
-  <button onclick="sendMsg()">Send</button>
-</div><script>
-
-// Disable right click
-window.addEventListener("contextmenu",e=>e.preventDefault());
-
-// Screenshot warning
-window.addEventListener("keyup",e=>{
-  if(e.key === "PrintScreen"){
-    alert("⚠ Screenshot not allowed");
-  }
-});
-
-function sendMsg(){
-
-  const nameInput = document.getElementById("name");
-  const anon = document.getElementById("anon").checked;
-  const msgInput = document.getElementById("msg");
-  const imgInput = document.getElementById("imgInput");
-  const voiceInput = document.getElementById("voiceInput");
-
-  let name = anon ? "Anonymous" : (nameInput.value || "Fan");
-  let msg = msgInput.value;
-
-  const chat = document.getElementById("chatBox");
-
-  const div = document.createElement("div");
-  div.className = "msg user";
-
-  let content = `<b>${name}</b><br>${msg}`;
-
-  // Image preview
-  if(imgInput.files[0]){
-    const url = URL.createObjectURL(imgInput.files[0]);
-    content += `<br><img src="${url}">`;
-  }
-
-  // Voice preview
-  if(voiceInput.files[0]){
-    const url = URL.createObjectURL(voiceInput.files[0]);
-    content += `<br><audio controls src="${url}"></audio>`;
-  }
-
-  div.innerHTML = content;
-  chat.appendChild(div);
-
-  // AI Auto Reply (demo)
-  setTimeout(()=>{
-    const reply = document.createElement("div");
-    reply.className = "msg creator";
-    reply.innerHTML = "Thanks for messaging BÓRẞÕÑ ❤️";
-    chat.appendChild(reply);
-    chat.scrollTop = chat.scrollHeight;
-  },1000);
-
-  msgInput.value="";
-  imgInput.value="";
-  voiceInput.value="";
-  chat.scrollTop = chat.scrollHeight;
-}
-
-</script></body>
+        // স্ক্রিনশট এবং কপি ব্লক (বেসিক সিকিউরিটি)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keyup', e => { if(e.key === 'PrintScreen') alert('Screenshots are disabled!'); });
+    </script>
+</body>
 </html>
