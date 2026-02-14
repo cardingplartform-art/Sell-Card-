@@ -1,0 +1,196 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BÓRẞÕÑ Creator Chat</title><style>
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:#0b141a;
+  color:white;
+}
+
+/* Watermark */
+body::after{
+  content:"BÓRẞÕÑ PRIVATE CHAT";
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:40px;
+  color:rgba(255,255,255,0.05);
+  pointer-events:none;
+  z-index:0;
+}
+
+.header{
+  background:#202c33;
+  padding:15px;
+  font-size:18px;
+  font-weight:bold;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.badge{
+  background:#25d366;
+  color:black;
+  padding:2px 6px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+.chat-box{
+  height:65vh;
+  overflow-y:auto;
+  padding:15px;
+}
+
+.msg{
+  max-width:70%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:10px;
+  position:relative;
+}
+
+.user{
+  background:#005c4b;
+  margin-left:auto;
+}
+
+.creator{
+  background:#202c33;
+}
+
+.input-bar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#202c33;
+  padding:10px;
+  display:flex;
+  gap:8px;
+}
+
+input,textarea{
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  outline:none;
+}
+
+textarea{
+  flex:1;
+  resize:none;
+}
+
+button{
+  background:#25d366;
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.top-form{
+  padding:10px;
+  background:#111b21;
+  display:flex;
+  gap:10px;
+}
+
+label{
+  font-size:12px;
+}
+
+/* Disable text select */
+*{
+  user-select:none;
+}
+
+img, audio{
+  max-width:100%;
+  border-radius:8px;
+  margin-top:5px;
+}
+
+.priority{
+  border:2px solid gold;
+}
+</style></head><body><div class="header">
+  BÓRẞÕÑ
+  <span class="badge">✔ Verified</span>
+</div><!-- Name + Anonymous Toggle --><div class="top-form">
+  <input id="name" placeholder="Your name">
+  <label>
+    <input type="checkbox" id="anon"> Anonymous
+  </label>
+</div><!-- Chat Area --><div class="chat-box" id="chatBox"></div><!-- Input Bar --><div class="input-bar">
+  <textarea id="msg" placeholder="Type message..."></textarea>
+  <input type="file" id="imgInput" accept="image/*">
+  <input type="file" id="voiceInput" accept="audio/*">
+  <button onclick="sendMsg()">Send</button>
+</div><script>
+
+// Disable right click
+window.addEventListener("contextmenu",e=>e.preventDefault());
+
+// Screenshot warning
+window.addEventListener("keyup",e=>{
+  if(e.key === "PrintScreen"){
+    alert("⚠ Screenshot not allowed");
+  }
+});
+
+function sendMsg(){
+
+  const nameInput = document.getElementById("name");
+  const anon = document.getElementById("anon").checked;
+  const msgInput = document.getElementById("msg");
+  const imgInput = document.getElementById("imgInput");
+  const voiceInput = document.getElementById("voiceInput");
+
+  let name = anon ? "Anonymous" : (nameInput.value || "Fan");
+  let msg = msgInput.value;
+
+  const chat = document.getElementById("chatBox");
+
+  const div = document.createElement("div");
+  div.className = "msg user";
+
+  let content = `<b>${name}</b><br>${msg}`;
+
+  // Image preview
+  if(imgInput.files[0]){
+    const url = URL.createObjectURL(imgInput.files[0]);
+    content += `<br><img src="${url}">`;
+  }
+
+  // Voice preview
+  if(voiceInput.files[0]){
+    const url = URL.createObjectURL(voiceInput.files[0]);
+    content += `<br><audio controls src="${url}"></audio>`;
+  }
+
+  div.innerHTML = content;
+  chat.appendChild(div);
+
+  // AI Auto Reply (demo)
+  setTimeout(()=>{
+    const reply = document.createElement("div");
+    reply.className = "msg creator";
+    reply.innerHTML = "Thanks for messaging BÓRẞÕÑ ❤️";
+    chat.appendChild(reply);
+    chat.scrollTop = chat.scrollHeight;
+  },1000);
+
+  msgInput.value="";
+  imgInput.value="";
+  voiceInput.value="";
+  chat.scrollTop = chat.scrollHeight;
+}
+
+</script></body>
+</html>
