@@ -1,271 +1,209 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BÓRẞÕÑ Chat Support</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BÓRẞÕÑ Private Chat</title>
+
+  <style>
+    /* বেসিক রিসেট */
+    body{ margin:0; font-family:sans-serif; background:#111; color:#fff; display:flex; flex-direction:column; height:100vh; }
+
+    /* লগইন পেজ */
+    #loginBox{ margin:auto; text-align:center; padding: 20px; }
+    input{ padding:12px; margin:8px; font-size:16px; width:220px; border:none; border-radius:8px; outline:none; }
+    button{ padding:12px 20px; font-size:16px; background:#00ff88; color: #000; font-weight: bold; border:none; border-radius:8px; cursor:pointer; }
+
+    /* চ্যাট বক্স (লুকানো থাকবে) */
+    #chatBox{ display:none; flex:1; flex-direction:column; width: 100%; max-width: 600px; margin: 0 auto; background: #000; }
+
+    /* মেসেজ এরিয়া */
+    #messages{ flex:1; overflow-y:auto; padding:15px; display: flex; flex-direction: column; gap: 8px; }
+
+    /* মেসেজ ডিজাইন (Fixed) */
+    .msg{ padding:10px 14px; border-radius:12px; font-size:15px; max-width: 75%; word-wrap: break-word; }
+    
+    /* নিজের মেসেজ (ডান দিকে) */
+    .msg.right { background: #00ff88; color: #000; align-self: flex-end; border-top-right-radius: 2px; }
+    
+    /* অন্যের মেসেজ (বাম দিকে) */
+    .msg.left { background: #333; color: #fff; align-self: flex-start; border-top-left-radius: 2px; }
+    .sender-name { font-size: 10px; opacity: 0.7; display: block; margin-bottom: 2px;}
+
+    /* ইনপুট এরিয়া */
+    #inputArea{ display:flex; padding:10px; background:#222; border-top: 1px solid #333; }
+    #msgInput{ flex:1; font-size:16px; padding:12px; border-radius:20px; border: none; outline: none; }
+    #sendBtn{ margin-left:8px; background: #00ff88; color: #000; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; padding: 0;}
+
+    /* অ্যাডমিন ইউজার লিস্ট */
+    #userList{ background:#1a1a1a; padding:10px; display:none; overflow-x:auto; white-space:nowrap; border-bottom: 1px solid #333; }
+    .userBtn{ background:#444; padding:8px 15px; margin-right:8px; border-radius:20px; cursor:pointer; display:inline-block; font-size: 14px; }
+    .userBtn.active { background: #00ff88; color: #000; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div id="loginBox">
+  <h2 style="color: #00ff88;">Secure Chat</h2>
+  <input id="name" placeholder="Enter Name..."><br>
+  <button onclick="login()">Start Chat</button>
+  <p style="font-size: 12px; color: #666; margin-top: 10px;">Admin Login: Type 'admin' as name</p>
+</div>
+
+<div id="userList"></div>
+
+<div id="chatBox">
+  <div id="chatHeader" style="padding: 10px; background: #111; text-align: center; font-size: 14px; color: #00ff88; border-bottom: 1px solid #222; display: none;">
+    Chatting with: <span id="currentChatUser">...</span>
+  </div>
+
+  <div id="messages"></div>
+
+  <div id="inputArea">
+    <input id="msgInput" placeholder="Type a message...">
+    <button id="sendBtn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<style>
-
-/* 🎨 WhatsApp Style CSS */
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
--webkit-tap-highlight-color:transparent;
-}
-
-body{
-background-color:#e5ddd5;
-height:100vh;
-display:flex;
-flex-direction:column;
-overflow:hidden;
-}
-
-/* --- Header --- */
-.header{
-background-color:#008069;
-color:white;
-padding:10px 15px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-height:60px;
-z-index:100;
-box-shadow:0 1px 3px rgba(0,0,0,0.2);
-}
-
-.header-left{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.avatar{
-width:40px;
-height:40px;
-border-radius:50%;
-background:#ccc;
-background-size:cover;
-background-position:center;
-}
-
-.chat-info h3{
-font-size:16px;
-font-weight:500;
-margin:0;
-}
-
-.chat-info p{
-font-size:12px;
-opacity:0.8;
-margin:0;
-}
-
-/* --- Chat Area --- */
-#chat-container{
-flex:1;
-overflow-y:auto;
-padding:10px;
-padding-bottom:85px; /* ✅ Input জায়গা */
-background-image:url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-background-repeat:repeat;
-display:flex;
-flex-direction:column;
-gap:5px;
-}
-
-/* --- Message --- */
-.msg{
-max-width:75%;
-padding:8px 10px;
-border-radius:8px;
-font-size:14.5px;
-word-wrap:break-word;
-box-shadow:0 1px 2px rgba(0,0,0,0.1);
-}
-
-.sent{
-background:#dcf8c6;
-align-self:flex-end;
-}
-
-.received{
-background:white;
-align-self:flex-start;
-}
-
-.time{
-font-size:10px;
-color:#999;
-text-align:right;
-display:block;
-margin-top:2px;
-}
-
-/* ============================= */
-/* ✅ INPUT AREA FIX START */
-/* ============================= */
-
-.input-area{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-background:#f0f0f0;
-padding:8px 10px;
-display:flex;
-align-items:center;
-gap:8px;
-min-height:65px;
-z-index:999;
-box-shadow:0 -2px 5px rgba(0,0,0,0.1);
-}
-
-.input-area input{
-flex:1;
-padding:12px 15px;
-border-radius:20px;
-border:none;
-outline:none;
-font-size:16px; /* লেখা বড় */
-background:white;
-}
-
-.icon-btn{
-font-size:20px;
-color:#555;
-padding:10px;
-cursor:pointer;
-}
-
-.send-btn{
-background:#008069;
-color:white;
-width:40px;
-height:40px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-border:none;
-font-size:18px;
-cursor:pointer;
-}
-
-/* ============================= */
-/* ✅ INPUT AREA FIX END */
-/* ============================= */
-
-.hidden{
-display:none!important;
-}
-
-</style>
-</head>
-
-<body>
-
-<!-- Chat Header -->
-<div class="header">
-<div class="header-left">
-<div class="avatar"></div>
-<div class="chat-info">
-<h3>BÓRẞÕÑ (Admin)</h3>
-<p>online</p>
-</div>
-</div>
-</div>
-
-<!-- Chat Box -->
-<div id="chat-container"></div>
-
-<!-- Input Area -->
-<div class="input-area">
-
-<label for="imgInput">
-<i class="fas fa-camera icon-btn"></i>
-</label>
-
-<input type="file" id="imgInput" hidden>
-
-<input type="text" id="msgInput" placeholder="মেসেজ লিখুন..." onkeypress="if(event.key==='Enter')sendMessage()">
-
-<button class="send-btn" onclick="sendMessage()">
-<i class="fas fa-paper-plane"></i>
-</button>
-
-</div>
 
 <script>
-
-/* Firebase Config */
-const firebaseConfig={
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_DOMAIN",
-databaseURL:"YOUR_DB_URL",
-projectId:"YOUR_ID",
-storageBucket:"YOUR_BUCKET",
-messagingSenderId:"YOUR_MSG_ID",
-appId:"YOUR_APP_ID"
+/* 🔥 তোমার রিয়েল কনফিগ এখানে বসানো হয়েছে */
+const firebaseConfig = {
+  apiKey: "AIzaSyBEiUjtqLlT_cMCE0ba9mweak5QQp915vQ",
+  authDomain: "borson-chat-web.firebaseapp.com",
+  databaseURL: "https://borson-chat-web-default-rtdb.firebaseio.com",
+  projectId: "borson-chat-web",
+  storageBucket: "borson-chat-web.firebasestorage.app",
+  messagingSenderId: "694928126106",
+  appId: "1:694928126106:web:d02ab12ed214accd335528"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+const db = firebase.database();
 
-let myName="User";
-let myID="user_"+Date.now();
+/* ভেরিয়েবল */
+const ADMIN_NAME = "borson_admin"; // অ্যাডমিন সিক্রেট নাম
+let myName = "";
+let isAdmin = false;
+let chatID = ""; // ফ্যানের ID বা অ্যাডমিনের সিলেক্ট করা ID
 
-function loadMessages(){
-db.ref("messages/"+myID).limitToLast(50)
-.on("child_added",(snap)=>{
+/* 🔐 লগইন ফাংশন */
+function login(){
+  const nameInput = document.getElementById("name").value.trim();
 
-const data=snap.val();
+  if(!nameInput){ alert("Please enter a name"); return; }
 
-const div=document.createElement("div");
-div.className="msg "+(data.sender===myName?"sent":"received");
+  myName = nameInput;
 
-div.innerHTML=`
-${data.text}
-<span class="time">
-${new Date(data.time).toLocaleTimeString([],{
-hour:'2-digit',
-minute:'2-digit'
-})}
-</span>
-`;
+  // 👑 অ্যাডমিন চেক
+  if(myName === ADMIN_NAME){
+    isAdmin = true;
+    document.getElementById("userList").style.display="block";
+    document.getElementById("chatHeader").style.display="block";
+    loadUserList(); // অ্যাডমিন প্যানেল লোড
+  } else {
+    // 👤 ফ্যান লগইন (নামের সাথে একটা র‍্যান্ডম নম্বর দিয়ে ইউনিক ID বানাই)
+    // যাতে একই নামের দুইজন মিক্স না হয়ে যায়
+    if(!localStorage.getItem("myChatID")) {
+        localStorage.setItem("myChatID", nameInput + "_" + Math.floor(Math.random() * 1000));
+    }
+    chatID = localStorage.getItem("myChatID");
+    
+    // ফ্যানের নাম ডেটাবেসে সেভ করা
+    db.ref("chats/" + chatID + "/info").set({ name: myName, lastActive: Date.now() });
+    
+    loadMessages(chatID); // মেসেজ লোড শুরু
+  }
 
-document.getElementById("chat-container").appendChild(div);
-
-document.getElementById("chat-container").scrollTop=
-document.getElementById("chat-container").scrollHeight;
-
-});
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("chatBox").style.display="flex";
 }
 
-function sendMessage(){
+/* 👑 অ্যাডমিন: সব ইউজার লোড করা */
+function loadUserList(){
+  db.ref("chats").on("child_added", snap => {
+    const uid = snap.key;
+    const userData = snap.val().info; // ইউজারের নাম বের করা
+    const displayUser = userData ? userData.name : uid;
 
-const input=document.getElementById("msgInput");
-const text=input.value.trim();
-if(!text)return;
+    const btn = document.createElement("span");
+    btn.className="userBtn";
+    btn.textContent = displayUser;
 
-db.ref("messages/"+myID).push({
-text:text,
-sender:myName,
-time:Date.now()
-});
+    btn.onclick = function(){
+      // সব বাটন থেকে কালার সরানো
+      document.querySelectorAll('.userBtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-input.value="";
+      // চ্যাট সিলেক্ট করা
+      chatID = uid;
+      document.getElementById("currentChatUser").innerText = displayUser;
+      document.getElementById("messages").innerHTML = ""; // আগের মেসেজ ক্লিয়ার
+      loadMessages(uid);
+    };
+
+    document.getElementById("userList").appendChild(btn);
+  });
 }
 
-loadMessages();
+/* 📩 মেসেজ পাঠানো */
+function sendMsg(){
+  const input = document.getElementById("msgInput");
+  const text = input.value.trim();
 
+  // অ্যাডমিন যদি কাউকে সিলেক্ট না করে থাকে
+  if(isAdmin && !chatID) { alert("Please select a user first!"); return; }
+  if(text===""){ return; }
+
+  // sender এর নাম সেট করা (Admin নাকি ফ্যান)
+  const senderName = isAdmin ? "Admin" : "User";
+
+  db.ref("chats/" + chatID + "/messages").push({
+    msg: text,
+    sender: senderName, // কে পাঠালো
+    timestamp: Date.now()
+  });
+
+  input.value="";
+}
+
+/* 📥 মেসেজ লোড করা */
+let currentListener = null;
+
+function loadMessages(path){
+  const box = document.getElementById("messages");
+  
+  // আগের লিসেনার বন্ধ করা (যাতে ডুপ্লিকেট মেসেজ না আসে)
+  if(currentListener) db.ref("chats/" + path + "/messages").off();
+
+  currentListener = db.ref("chats/" + path + "/messages");
+  
+  currentListener.on("child_added", snap => {
+    const data = snap.val();
+    
+    // মেসেজ ডান দিকে যাবে নাকি বাম দিকে?
+    // আমি অ্যাডমিন + মেসেজ পাঠিয়েছে Admin = ডানে (Right)
+    // আমি ইউজার + মেসেজ পাঠিয়েছে User = ডানে (Right)
+    let isMe = false;
+    if(isAdmin && data.sender === "Admin") isMe = true;
+    if(!isAdmin && data.sender === "User") isMe = true;
+
+    const div = document.createElement("div");
+    div.className = isMe ? "msg right" : "msg left";
+    
+    // শুধু অন্যের মেসেজে নাম দেখাবে
+    div.innerHTML = `
+      ${!isMe ? `<span class="sender-name">${isAdmin ? 'Fan' : 'Admin'}</span>` : ''}
+      ${data.msg}
+    `;
+
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight; // অটো স্ক্রল
+  });
+}
 </script>
 
 </body>
