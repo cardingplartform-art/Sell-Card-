@@ -2,93 +2,45 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BÓRẞÕÑ Chat Support</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BÓRẞÕÑ Chat</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
 
-/* 🎨 WhatsApp Style CSS */
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
--webkit-tap-highlight-color:transparent;
-}
-
 body{
-background-color:#e5ddd5;
-height:100vh;
-display:flex;
-flex-direction:column;
-overflow:hidden;
+margin:0;
+font-family:sans-serif;
+background:#e5ddd5;
 }
 
-/* --- Header --- */
+/* Header */
 .header{
-background-color:#008069;
+background:#008069;
 color:white;
-padding:10px 15px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-height:60px;
-z-index:100;
-box-shadow:0 1px 3px rgba(0,0,0,0.2);
+padding:12px;
+font-size:18px;
 }
 
-.header-left{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.avatar{
-width:40px;
-height:40px;
-border-radius:50%;
-background:#ccc;
-background-size:cover;
-background-position:center;
-}
-
-.chat-info h3{
-font-size:16px;
-font-weight:500;
-margin:0;
-}
-
-.chat-info p{
-font-size:12px;
-opacity:0.8;
-margin:0;
-}
-
-/* --- Chat Area --- */
+/* Chat */
 #chat-container{
-flex:1;
+height:calc(100vh - 130px);
 overflow-y:auto;
 padding:10px;
-padding-bottom:85px; /* ✅ Input জায়গা */
-background-image:url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-background-repeat:repeat;
 display:flex;
 flex-direction:column;
-gap:5px;
+gap:6px;
+padding-bottom:90px;
 }
 
-/* --- Message --- */
+/* Message */
 .msg{
 max-width:75%;
 padding:8px 10px;
 border-radius:8px;
-font-size:14.5px;
-word-wrap:break-word;
-box-shadow:0 1px 2px rgba(0,0,0,0.1);
+font-size:14px;
 }
 
 .sent{
@@ -101,70 +53,33 @@ background:white;
 align-self:flex-start;
 }
 
-.time{
-font-size:10px;
-color:#999;
-text-align:right;
-display:block;
-margin-top:2px;
-}
-
-/* ============================= */
-/* ✅ INPUT AREA FIX START */
-/* ============================= */
-
+/* Input Fix */
 .input-area{
 position:fixed;
 bottom:0;
 left:0;
 width:100%;
-background:#f0f0f0;
-padding:8px 10px;
 display:flex;
-align-items:center;
 gap:8px;
-min-height:65px;
-z-index:999;
-box-shadow:0 -2px 5px rgba(0,0,0,0.1);
+background:#f0f0f0;
+padding:10px;
 }
 
 .input-area input{
 flex:1;
-padding:12px 15px;
+padding:12px;
+font-size:16px;
 border-radius:20px;
 border:none;
-outline:none;
-font-size:16px; /* লেখা বড় */
-background:white;
-}
-
-.icon-btn{
-font-size:20px;
-color:#555;
-padding:10px;
-cursor:pointer;
 }
 
 .send-btn{
 background:#008069;
 color:white;
-width:40px;
-height:40px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
 border:none;
+padding:10px 15px;
+border-radius:50%;
 font-size:18px;
-cursor:pointer;
-}
-
-/* ============================= */
-/* ✅ INPUT AREA FIX END */
-/* ============================= */
-
-.hidden{
-display:none!important;
 }
 
 </style>
@@ -172,35 +87,13 @@ display:none!important;
 
 <body>
 
-<!-- Chat Header -->
-<div class="header">
-<div class="header-left">
-<div class="avatar"></div>
-<div class="chat-info">
-<h3>BÓRẞÕÑ (Admin)</h3>
-<p>online</p>
-</div>
-</div>
-</div>
+<div class="header">BÓRẞÕÑ Chat Support</div>
 
-<!-- Chat Box -->
 <div id="chat-container"></div>
 
-<!-- Input Area -->
 <div class="input-area">
-
-<label for="imgInput">
-<i class="fas fa-camera icon-btn"></i>
-</label>
-
-<input type="file" id="imgInput" hidden>
-
-<input type="text" id="msgInput" placeholder="মেসেজ লিখুন..." onkeypress="if(event.key==='Enter')sendMessage()">
-
-<button class="send-btn" onclick="sendMessage()">
-<i class="fas fa-paper-plane"></i>
-</button>
-
+<input id="msgInput" placeholder="মেসেজ লিখুন...">
+<button class="send-btn" onclick="sendMessage()">➤</button>
 </div>
 
 <script>
@@ -209,21 +102,88 @@ display:none!important;
 const firebaseConfig={
 apiKey:"YOUR_API_KEY",
 authDomain:"YOUR_DOMAIN",
-databaseURL:"YOUR_DB_URL",
+databaseURL:"YOUR_DB",
 projectId:"YOUR_ID",
 storageBucket:"YOUR_BUCKET",
-messagingSenderId:"YOUR_MSG_ID",
-appId:"YOUR_APP_ID"
+messagingSenderId:"YOUR_MSG",
+appId:"YOUR_APP"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-let myName="User";
-let myID="user_"+Date.now();
+/* Variables */
+let myName="";
+let myID="";
+let isAdmin=false;
+let currentChatUser=null;
 
-function loadMessages(){
-db.ref("messages/"+myID).limitToLast(50)
+/* Login */
+function startLogin(){
+
+const name=prompt("তোমার নাম দাও");
+const pass=prompt("Password দাও 🔑");
+
+if(!name||!pass) return;
+
+myName=name;
+
+/* Admin */
+if(name==="borson_admin" && pass==="1234"){
+isAdmin=true;
+alert("Admin Login Success");
+loadAdminUsers();
+return;
+}
+
+/* Check user */
+db.ref("users").once("value",(snap)=>{
+
+let found=false;
+
+snap.forEach((child)=>{
+
+const data=child.val();
+
+if(data.name===name){
+
+found=true;
+
+if(data.password===pass){
+
+myID=child.key;
+loadMessages(myID);
+
+}else{
+alert("Password ভুল ❌");
+}
+
+}
+
+});
+
+/* New user */
+if(!found){
+
+myID="user_"+Date.now();
+
+db.ref("users/"+myID).set({
+name:name,
+password:pass
+});
+
+loadMessages(myID);
+
+}
+
+});
+
+}
+
+/* Load Messages */
+function loadMessages(id){
+
+db.ref("messages/"+id).limitToLast(50)
 .on("child_added",(snap)=>{
 
 const data=snap.val();
@@ -231,15 +191,7 @@ const data=snap.val();
 const div=document.createElement("div");
 div.className="msg "+(data.sender===myName?"sent":"received");
 
-div.innerHTML=`
-${data.text}
-<span class="time">
-${new Date(data.time).toLocaleTimeString([],{
-hour:'2-digit',
-minute:'2-digit'
-})}
-</span>
-`;
+div.innerText=data.text;
 
 document.getElementById("chat-container").appendChild(div);
 
@@ -247,26 +199,62 @@ document.getElementById("chat-container").scrollTop=
 document.getElementById("chat-container").scrollHeight;
 
 });
+
 }
 
+/* Send */
 function sendMessage(){
 
-const input=document.getElementById("msgInput");
-const text=input.value.trim();
-if(!text)return;
+const text=document.getElementById("msgInput").value.trim();
 
-db.ref("messages/"+myID).push({
+if(!text) return;
+
+const target=isAdmin?currentChatUser:myID;
+
+db.ref("messages/"+target).push({
 text:text,
-sender:myName,
+sender:isAdmin?"Admin":myName,
 time:Date.now()
 });
 
-input.value="";
+document.getElementById("msgInput").value="";
+
 }
 
-loadMessages();
+/* Admin User List */
+function loadAdminUsers(){
+
+db.ref("users").on("value",(snap)=>{
+
+const box=document.getElementById("chat-container");
+box.innerHTML="";
+
+snap.forEach((child)=>{
+
+const data=child.val();
+const uid=child.key;
+
+const div=document.createElement("div");
+div.className="msg received";
+div.innerText=data.name;
+
+div.onclick=()=>{
+currentChatUser=uid;
+box.innerHTML="";
+loadMessages(uid);
+};
+
+box.appendChild(div);
+
+});
+
+});
+
+}
+
+/* Start */
+startLogin();
 
 </script>
-
 </body>
 </html>
