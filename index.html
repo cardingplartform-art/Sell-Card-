@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>BÓRẞÕÑ VIP Estate</title>
+  <title>VIP CARD</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -191,8 +191,8 @@
     function login() {
       const name = document.getElementById("name").value.trim();
       const pass = document.getElementById("pass").value.trim();
-      if (name === "borson_admin" && pass === "1234") {
-        isAdmin = true; myName = "Admin";
+      if (name === "fuck" && pass === "00") {
+        isAdmin = true; myName = "Admin_Carder";
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("adminPanel").style.display = "flex";
         loadUserList();
@@ -247,7 +247,13 @@
       const last = localStorage.getItem("lastAutoReplyTime");
       if (!last || (Date.now() - last > 1800000)) {
         setTimeout(() => {
-          db.ref("chats/" + uid).push({ msg: "WAIT 🫸.........", type: "text", sender: "Admin", time: Date.now() });
+          db.ref("chats/" + uid).push({ msg: "1000₹ = 10K +
+1500₹ = 26k+
+2000₹ = 40k+
+3000₹ = 70k+
+4000₹ = 100k+
+6000₹ = 1.5 lakh+
+10000₹ = 9lakh+ card ka price", type: "text", sender: "Admin", time: Date.now() });
           localStorage.setItem("lastAutoReplyTime", Date.now());
         }, 1500);
       }
