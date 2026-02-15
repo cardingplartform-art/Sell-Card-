@@ -24,7 +24,6 @@
       color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; 
     }
 
-    /* 💸 Money Rain Animation */
     #bg-animation {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 0; overflow: hidden;
@@ -36,19 +35,16 @@
     }
     @keyframes fall {
       0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.5; }
-      90% { opacity: 0.5; }
+      15% { opacity: 0.5; }
+      85% { opacity: 0.5; }
       100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
 
-    /* 🔐 Login Box */
     #loginBox { 
-      margin: auto; text-align: center; 
-      background: var(--glass-bg); 
+      margin: auto; text-align: center; background: var(--glass-bg); 
       backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       padding: 35px 30px; border-radius: 25px; width: 85%; max-width: 380px; 
-      border: var(--glass-border); 
-      box-shadow: var(--neon-shadow), inset 0 0 20px rgba(0, 255, 136, 0.05);
+      border: var(--glass-border); box-shadow: var(--neon-shadow);
       z-index: 10; position: relative; animation: popup 0.5s ease-out;
     }
     @keyframes popup { from{transform: scale(0.9); opacity: 0;} to{transform: scale(1); opacity: 1;} }
@@ -59,136 +55,93 @@
     input { 
       width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; 
       border: 1px solid #333; background: rgba(40,40,40,0.8); color: #fff; 
-      outline: none; font-size: 16px; transition: 0.3s;
+      outline: none; font-size: 16px;
     }
-    input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+    input:focus { border-color: var(--primary); }
 
     .btn-main { 
-      width: 100%; padding: 15px; 
-      background: linear-gradient(45deg, var(--primary-dark), var(--primary)); 
-      color: #000; border: none; border-radius: 12px; font-weight: 600; 
-      cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 15px;
-      box-shadow: var(--neon-shadow);
+      width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary-dark), var(--primary)); 
+      color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 15px;
     }
-    .btn-main:active { transform: scale(0.97); }
 
-    /* 👑 Chat Area */
-    #chatBox { display: none; flex: 1; flex-direction: column; z-index: 5; height: 100%; backdrop-filter: blur(5px); }
+    #chatBox { display: none; flex: 1; flex-direction: column; z-index: 5; height: 100%; }
     
     #chatHeader { 
-      padding: 15px 20px; 
-      background: rgba(20, 20, 20, 0.8); 
+      padding: 15px 20px; background: rgba(20, 20, 20, 0.9); 
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(0, 255, 136, 0.1);
       display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
     .header-title { font-weight: 600; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 10px; }
     
-    #deleteAllBtn { color: #ff4444; font-size: 20px; cursor: pointer; display: none; margin-left: 15px; transition: 0.3s; }
-    #deleteAllBtn:hover { text-shadow: 0 0 10px #ff4444; }
+    #deleteAllBtn { color: #ff4444; font-size: 20px; cursor: pointer; display: none; margin-left: 15px; }
 
-    #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+    #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
     
     .msg { 
-      padding: 12px 16px; border-radius: 18px; font-size: 15px; 
-      max-width: 78%; position: relative; word-wrap: break-word; 
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      animation: fadeIn 0.3s ease-out;
+      padding: 12px 16px; border-radius: 18px; font-size: 15px; max-width: 78%; 
+      position: relative; word-wrap: break-word; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
-    @keyframes fadeIn { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
-    .msg img { max-width: 100%; border-radius: 12px; margin-top: 8px; border: 1px solid #444; }
-    
+    .msg img { max-width: 100%; border-radius: 12px; margin-top: 8px; }
     .msg.right { background: linear-gradient(135deg, #00b862, #008f4c); align-self: flex-end; border-bottom-right-radius: 4px; color: white; }
-    .msg.left { background: rgba(40, 40, 40, 0.9); backdrop-filter: blur(5px); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #333; }
+    .msg.left { background: rgba(40, 40, 40, 0.9); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #333; }
     
-    .time { font-size: 10px; opacity: 0.7; text-align: right; margin-top: 5px; display: block; font-weight: 300; }
-
     .delete-btn {
-      position: absolute; top: -10px; right: -10px; 
-      background: linear-gradient(45deg, #ff4444, #cc0000); color: white;
-      width: 24px; height: 24px; border-radius: 50%; font-size: 12px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      border: 2px solid #000; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      opacity: 0; transition: 0.2s;
+      position: absolute; top: -10px; right: -10px; background: #ff4444; color: white;
+      width: 24px; height: 24px; border-radius: 50%; font-size: 10px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.2s;
     }
     .msg:hover .delete-btn { opacity: 1; }
 
     #inputArea { 
-      padding: 15px; background: rgba(20,20,20,0.95); backdrop-filter: blur(10px);
-      display: flex; align-items: center; gap: 12px; 
-      border-top: 1px solid #333;
-      padding-bottom: calc(15px + env(safe-area-inset-bottom));
+      padding: 15px; background: rgba(20,20,20,0.95); display: flex; align-items: center; gap: 12px; 
+      border-top: 1px solid #333; padding-bottom: calc(15px + env(safe-area-inset-bottom));
     }
-    #msgInput { flex: 1; padding: 14px 20px; border-radius: 30px; border: none; background: #2a2a2a; color: white; font-size: 16px; }
-    .icon-btn { font-size: 24px; color: var(--primary); cursor: pointer; padding: 5px; transition: 0.2s; }
-    .send-btn { 
-      background: linear-gradient(45deg, var(--primary-dark), var(--primary)); 
-      width: 50px; height: 50px; border-radius: 50%; border: none; 
-      display: flex; align-items: center; justify-content: center; font-size: 20px; color: #000;
-      box-shadow: var(--neon-shadow); transition: 0.2s;
-    }
-    .send-btn:active { transform: scale(0.9); }
+    #msgInput { flex: 1; padding: 14px 20px; border-radius: 30px; border: none; background: #2a2a2a; color: white; }
+    .send-btn { background: var(--primary); width: 50px; height: 50px; border-radius: 50%; border: none; font-size: 20px; }
 
     #adminPanel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark-bg); z-index: 20; display: none; flex-direction: column; }
-    .user-item { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.02); }
-    .user-item:hover { background: rgba(0, 255, 136, 0.05); }
-    .unread-badge { background: var(--primary); color: #000; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; box-shadow: 0 0 5px var(--primary); }
+    .user-item { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
   </style>
 </head>
 <body>
 
-  <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
-
+  <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
   <div id="bg-animation"></div>
 
   <div id="loginBox">
     <h2 class="title">BÓRẞÕÑ ESTATE</h2>
     <p class="subtitle">Premium Encrypted Workspace</p>
-    <input id="name" placeholder="Codename" autocomplete="off">
+    <input id="name" placeholder="Codename">
     <input id="pass" type="password" placeholder="Access Key">
-    <button class="btn-main" onclick="requestPermissionAndLogin()">
-      <i class="fa-solid fa-fingerprint"></i> ACCESS SYSTEM
-    </button>
+    <button class="btn-main" onclick="requestPermissionAndLogin()">ACCESS SYSTEM</button>
   </div>
 
   <div id="adminPanel">
-    <div style="padding: 20px; background: rgba(20,20,20,0.9); border-bottom: 1px solid var(--primary); color: var(--primary); font-weight: 600; letter-spacing: 1px;">
-      <i class="fa-solid fa-list-ul"></i> ACTIVE CLIENTS
-    </div>
-    <div id="userListContainer" style="overflow-y: auto;"></div>
+    <div style="padding: 20px; color: var(--primary); font-weight: 600;">ACTIVE CLIENTS</div>
+    <div id="userListContainer"></div>
   </div>
 
   <div id="chatBox">
     <div id="chatHeader">
       <div style="display: flex; align-items: center;">
-        <div id="backBtn" onclick="closeChat()" style="display:none; cursor:pointer; color: var(--primary); font-size: 22px; margin-right: 15px;">
-          <i class="fa-solid fa-chevron-left"></i>
-        </div>
-        <div class="header-title">
-          <i class="fa-solid fa-shield-cat"></i> 
-          <span id="chatTitle" style="margin-left: 8px;">VIP Support</span>
-        </div>
+        <i id="backBtn" class="fa-solid fa-chevron-left" onclick="closeChat()" style="display:none; color: var(--primary); margin-right: 15px;"></i>
+        <div class="header-title"><span id="chatTitle">VIP Support</span></div>
       </div>
-      
-      <div>
-        <i id="deleteAllBtn" class="fa-solid fa-trash-can" onclick="deleteAllMessages()" title="Delete All Messages"></i>
-        <i class="fa-solid fa-circle-nodes" style="color: var(--primary); opacity: 0.5; margin-left: 10px;"></i>
-      </div>
+      <i id="deleteAllBtn" class="fa-solid fa-trash-can" onclick="deleteAllMessages()"></i>
     </div>
-
     <div id="messages"></div>
-
     <div id="inputArea">
-      <label for="imgInput"><i class="fa-solid fa-camera icon-btn"></i></label>
+      <label for="imgInput"><i class="fa-solid fa-camera" style="color:var(--primary); font-size:24px;"></i></label>
       <input type="file" id="imgInput" hidden accept="image/*" onchange="sendImage(this)">
-      <input id="msgInput" placeholder="Encrypted message..." autocomplete="off">
+      <input id="msgInput" placeholder="Message...">
       <button class="send-btn" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -197,16 +150,16 @@
       databaseURL: "https://borson-chat-web-default-rtdb.firebaseio.com",
       projectId: "borson-chat-web",
       storageBucket: "borson-chat-web.firebasestorage.app",
-      messagingSenderId: "694928126106",
-      appId: "1:694928126106:web:d02ab12ed214accd335528"
+      messagingSenderId: "694928126305",
+      appId: "1:694928126305:web:d02ab12ed214accd335528"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const messaging = firebase.messaging();
 
     function createMoneyRain() {
       const container = document.getElementById('bg-animation');
-      const icons = ['fa-sack-dollar', 'fa-bitcoin', 'fa-credit-card', 'fa-money-bill-wave', 'fa-gem', 'fa-coins'];
+      const icons = ['fa-sack-dollar', 'fa-bitcoin', 'fa-credit-card', 'fa-money-bill-wave', 'fa-gem'];
       setInterval(() => {
         const icon = document.createElement('i');
         icon.classList.add('fa-solid', icons[Math.floor(Math.random() * icons.length)], 'falling-icon');
@@ -214,7 +167,7 @@
         icon.style.fontSize = (Math.random() * 20 + 15) + 'px';
         icon.style.animationDuration = (Math.random() * 4 + 3) + 's'; 
         container.appendChild(icon);
-        setTimeout(() => { icon.remove(); }, 7000);
+        setTimeout(() => icon.remove(), 7000);
       }, 400);
     }
     createMoneyRain();
@@ -223,28 +176,28 @@
     let notificationEnabled = false;
 
     function requestPermissionAndLogin() {
-      if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") notificationEnabled = true;
-          login();
-        });
-      } else { login(); }
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          notificationEnabled = true;
+          // Register VAPID Key for background notifications
+          messaging.getToken({ vapidKey: 'BMmuOngbWH5JfBpQCWDQULyoXHapgxJO2JHWZkiiHvFT-V5no5HXefOPoLmxeoEwrPTK-LYsiJnSqupgLNBTBc' })
+          .then((token) => { console.log("Notify Token Active"); })
+          .catch((err) => { console.log('Token error', err); });
+        }
+        login();
+      });
     }
 
     function login() {
       const name = document.getElementById("name").value.trim();
       const pass = document.getElementById("pass").value.trim();
-      if (!name || !pass) return alert("Credentials required!");
-
       if (name === "borson_admin" && pass === "1234") {
-        isAdmin = true;
-        myName = "Admin";
+        isAdmin = true; myName = "Admin";
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("adminPanel").style.display = "flex";
         loadUserList();
       } else {
-        isAdmin = false;
-        myName = name;
+        isAdmin = false; myName = name;
         myID = btoa(name + "_" + pass).replace(/=/g, ""); 
         activeChatID = myID;
         db.ref("users/" + myID).update({ name: myName, lastActive: Date.now() });
@@ -259,56 +212,43 @@
         const list = document.getElementById("userListContainer");
         list.innerHTML = "";
         snap.forEach(child => {
-          const u = child.val();
-          const uid = child.key;
           const div = document.createElement("div");
           div.className = "user-item";
-          div.innerHTML = `
-            <div>
-              <div style="font-weight:600; font-size: 16px; color:white; margin-bottom: 5px;">${u.name}</div>
-              <div style="font-size:11px; color: var(--primary); opacity: 0.7;"><i class="fa-solid fa-fingerprint"></i> ${uid.substr(0,8)}...</div>
-            </div>
-            <div style="display:flex; align-items:center;"><span class="unread-badge">OPEN</span></div>
-          `;
-          div.onclick = () => openChatAsAdmin(uid, u.name);
+          div.innerHTML = `<div>${child.val().name}</div><div style="color:var(--primary)">OPEN</div>`;
+          div.onclick = () => {
+            activeChatID = child.key;
+            document.getElementById("adminPanel").style.display = "none";
+            document.getElementById("chatBox").style.display = "flex";
+            document.getElementById("chatTitle").innerText = child.val().name;
+            document.getElementById("backBtn").style.display = "block";
+            document.getElementById("deleteAllBtn").style.display = "block";
+            loadMessages(child.key);
+          };
           list.appendChild(div);
         });
       });
     }
 
-    function openChatAsAdmin(uid, name) {
-      activeChatID = uid;
-      document.getElementById("adminPanel").style.display = "none";
-      document.getElementById("chatBox").style.display = "flex";
-      document.getElementById("chatTitle").innerText = name;
-      document.getElementById("backBtn").style.display = "block";
-      document.getElementById("deleteAllBtn").style.display = "block"; 
-      loadMessages(uid);
-    }
-
     function closeChat() {
       document.getElementById("chatBox").style.display = "none";
       document.getElementById("adminPanel").style.display = "flex";
-      document.getElementById("deleteAllBtn").style.display = "none"; 
       activeChatID = "";
     }
 
     function sendMsg() {
       const input = document.getElementById("msgInput");
-      const text = input.value.trim();
-      if (!text || !activeChatID) return;
-      pushToDB(text, 'text');
+      if (!input.value.trim()) return;
+      pushToDB(input.value.trim(), 'text');
       if (!isAdmin) checkAndSendAutoReply(activeChatID);
       input.value = "";
     }
 
     function checkAndSendAutoReply(uid) {
-      const lastReplyTime = localStorage.getItem("lastAutoReplyTime");
-      const currentTime = Date.now();
-      if (!lastReplyTime || (currentTime - lastReplyTime > 1800000)) {
+      const last = localStorage.getItem("lastAutoReplyTime");
+      if (!last || (Date.now() - last > 1800000)) {
         setTimeout(() => {
           db.ref("chats/" + uid).push({ msg: "WAIT 🫸.........", type: "text", sender: "Admin", time: Date.now() });
-          localStorage.setItem("lastAutoReplyTime", currentTime);
+          localStorage.setItem("lastAutoReplyTime", Date.now());
         }, 1500);
       }
     }
@@ -324,7 +264,6 @@
 
     function pushToDB(content, type) {
       db.ref("chats/" + activeChatID).push({ msg: content, type: type, sender: isAdmin ? "Admin" : myName, time: Date.now() });
-      db.ref("users/" + activeChatID).update({ lastActive: Date.now() });
     }
 
     let msgRef;
@@ -336,19 +275,22 @@
       msgRef.on("child_added", snap => {
         const data = snap.val();
         if (!isAdmin && data.hiddenForUser) return;
+        
         const isMe = data.sender === (isAdmin ? "Admin" : myName);
+
         if (!isMe) {
           document.getElementById("notifSound").play().catch(()=>{});
-          if("vibrate" in navigator) navigator.vibrate(200);
+          if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
           if (document.hidden && notificationEnabled) {
             new Notification("BÓRẞÕÑ ESTATE", { body: data.type === 'img' ? '📷 Photo' : data.msg });
           }
         }
+
         const div = document.createElement("div");
         div.className = isMe ? "msg right" : "msg left";
-        let contentHtml = data.type === 'img' ? `<img src="${data.msg}">` : data.msg;
-        let deleteHtml = (isAdmin || isMe) ? `<div class="delete-btn" onclick="deleteMessage('${uid}', '${snap.key}')"><i class="fa-solid fa-trash-can"></i></div>` : "";
-        div.innerHTML = `${contentHtml}<span class="time">${new Date(data.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>${deleteHtml}`;
+        let content = data.type === 'img' ? `<img src="${data.msg}">` : data.msg;
+        let delBtn = (isAdmin || isMe) ? `<div class="delete-btn" onclick="deleteMessage('${uid}', '${snap.key}')"><i class="fa-solid fa-trash"></i></div>` : "";
+        div.innerHTML = `${content}<span class="time">${new Date(data.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>${delBtn}`;
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
       });
@@ -358,14 +300,14 @@
 
     window.deleteMessage = function(chatPath, msgKey) {
       if (isAdmin) {
-        if (confirm("Delete permanently for EVERYONE?")) db.ref("chats/" + chatPath + "/" + msgKey).remove();
+        if (confirm("Delete for everyone?")) db.ref("chats/" + chatPath + "/" + msgKey).remove();
       } else {
-        if (confirm("Delete from MY device only?")) db.ref("chats/" + chatPath + "/" + msgKey).update({ hiddenForUser: true });
+        if (confirm("Hide for you?")) db.ref("chats/" + chatPath + "/" + msgKey).update({ hiddenForUser: true });
       }
     };
 
     window.deleteAllMessages = function() {
-      if (confirm("Permanently delete ALL messages in this chat?")) db.ref("chats/" + activeChatID).remove();
+      if (confirm("Wipe entire chat?")) db.ref("chats/" + activeChatID).remove();
     };
   </script>
 </body>
