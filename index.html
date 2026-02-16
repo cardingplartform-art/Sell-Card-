@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>VIP Carder</title>
+  <title>BÓRẞÕÑ VIP Estate</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -12,138 +12,145 @@
     :root {
       --primary: #00ff88;
       --primary-dark: #00cc6a;
-      --dark-bg: #0a0a0a;
-      --glass-bg: rgba(20, 20, 20, 0.7);
-      --glass-border: 1px solid rgba(0, 255, 136, 0.2);
-      --neon-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      --glass: rgba(20, 20, 20, 0.95);
+      --border: rgba(0, 255, 136, 0.3);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); 
-      color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; 
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Poppins', sans-serif; }
+    body { background: #000; color: #fff; height: 100vh; overflow: hidden; position: relative; }
 
-    #bg-animation {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 0; overflow: hidden;
-    }
-    .falling-icon {
-      position: absolute; top: -10%; color: var(--primary); opacity: 0;
-      animation: fall linear infinite;
-      text-shadow: 0 0 5px var(--primary);
-    }
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-      15% { opacity: 0.5; }
-      85% { opacity: 0.5; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-    }
+    /* 💸 Background Falling Animation */
+    #bg-animation { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; opacity: 0.4; }
+    .falling-icon { position: absolute; top: -10%; color: var(--primary); animation: fall linear infinite; text-shadow: 0 0 10px var(--primary); }
+    @keyframes fall { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
 
+    /* 💣 Celebration Overlay */
+    #celebrationOverlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); z-index: 9999;
+      justify-content: center; align-items: center; flex-direction: column;
+    }
+    .boom-text {
+      font-size: 40px; font-weight: bold; color: #ffd700;
+      text-shadow: 0 0 20px #ff4500; animation: pop 0.5s ease;
+    }
+    @keyframes pop { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    
+    /* 🔐 Login Box */
     #loginBox { 
-      margin: auto; text-align: center; background: var(--glass-bg); 
-      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      padding: 35px 30px; border-radius: 25px; width: 85%; max-width: 380px; 
-      border: var(--glass-border); box-shadow: var(--neon-shadow);
-      z-index: 10; position: relative; animation: popup 0.5s ease-out;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 90%; max-width: 400px; padding: 35px; background: var(--glass);
+      backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid var(--border);
+      text-align: center; z-index: 100; box-shadow: 0 0 50px rgba(0, 255, 136, 0.2);
     }
-    @keyframes popup { from{transform: scale(0.9); opacity: 0;} to{transform: scale(1); opacity: 1;} }
+    input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: rgba(0,0,0,0.6); color: #fff; outline: none; font-size: 16px; }
+    .btn-main { width: 100%; padding: 16px; background: linear-gradient(45deg, var(--primary-dark), var(--primary)); color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,255,136,0.3); }
 
-    h2.title { color: var(--primary); font-weight: 600; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,255,136,0.4); margin-bottom: 5px; }
-    p.subtitle { font-size: 13px; color: #aaa; margin-bottom: 25px; }
-
-    input { 
-      width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; 
-      border: 1px solid #333; background: rgba(40,40,40,0.8); color: #fff; 
-      outline: none; font-size: 16px;
-    }
-    input:focus { border-color: var(--primary); }
-
-    .btn-main { 
-      width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary-dark), var(--primary)); 
-      color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 15px;
-    }
-
-    #chatBox { display: none; flex: 1; flex-direction: column; z-index: 5; height: 100%; }
+    /* 👑 Admin List Panel */
+    #adminList { display: none; height: 100vh; flex-direction: column; background: #000; z-index: 200; position: absolute; width: 100%; }
+    .list-header { padding: 20px; border-bottom: 1px solid var(--border); background: #111; display: flex; justify-content: space-between; align-items: center; }
     
-    #chatHeader { 
-      padding: 15px 20px; background: rgba(20, 20, 20, 0.9); 
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(0, 255, 136, 0.1);
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .header-title { font-weight: 600; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 10px; }
-    
-    #deleteAllBtn { color: #ff4444; font-size: 20px; cursor: pointer; display: none; margin-left: 15px; }
+    .user-card { padding: 15px 20px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.02); }
+    .user-card:hover { background: #1a1a1a; }
+    .user-del-btn { color: #ff4444; font-size: 18px; padding: 10px; cursor: pointer; z-index: 10; margin-left: auto; }
+    .unread-badge { background: var(--primary); color: #000; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; margin-left: 10px; }
 
-    #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+    /* 📱 Chat Area */
+    #appContainer { display: none; height: 100vh; flex-direction: column; z-index: 10; position: relative; }
     
-    .msg { 
-      padding: 12px 16px; border-radius: 18px; font-size: 15px; max-width: 78%; 
-      position: relative; word-wrap: break-word; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    header { padding: 15px; background: rgba(10,10,10,0.95); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #222; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 18px; }
+
+    /* 💳 Premium Wallet */
+    #wallet-card { 
+      background: linear-gradient(135deg, #111, #000); 
+      border: 1px solid var(--border); border-radius: 20px; padding: 20px; 
+      margin: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden;
     }
-    .msg img { max-width: 100%; border-radius: 12px; margin-top: 8px; }
-    .msg.right { background: linear-gradient(135deg, #00b862, #008f4c); align-self: flex-end; border-bottom-right-radius: 4px; color: white; }
-    .msg.left { background: rgba(40, 40, 40, 0.9); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #333; }
+    .val-box h3 { font-size: 18px; color: #fff; margin-top: 5px; }
+    .val-box p { font-size: 10px; color: var(--primary); letter-spacing: 1px; font-weight: 600; }
+
+    /* Messages */
+    #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; }
+    .msg { padding: 10px 14px; border-radius: 16px; max-width: 75%; font-size: 14px; position: relative; word-wrap: break-word; }
+    .msg img { max-width: 100%; border-radius: 10px; margin-top: 5px; border: 1px solid #444; }
+    .msg.right { align-self: flex-end; background: #005c4b; border-bottom-right-radius: 2px; color: #fff; }
+    .msg.left { align-self: flex-start; background: #262d31; border-bottom-left-radius: 2px; border: 1px solid #333; }
     
-    .delete-btn {
-      position: absolute; top: -10px; right: -10px; background: #ff4444; color: white;
-      width: 24px; height: 24px; border-radius: 50%; font-size: 10px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.2s;
-    }
-    .msg:hover .delete-btn { opacity: 1; }
-
-    #inputArea { 
-      padding: 15px; background: rgba(20,20,20,0.95); display: flex; align-items: center; gap: 12px; 
-      border-top: 1px solid #333; padding-bottom: calc(15px + env(safe-area-inset-bottom));
-    }
-    #msgInput { flex: 1; padding: 14px 20px; border-radius: 30px; border: none; background: #2a2a2a; color: white; }
-    .send-btn { background: var(--primary); width: 50px; height: 50px; border-radius: 50%; border: none; font-size: 20px; }
-
-    #adminPanel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark-bg); z-index: 20; display: none; flex-direction: column; }
-    .user-item { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+    .input-bar { padding: 12px 15px; background: #111; display: flex; align-items: center; gap: 12px; }
+    .input-bar input { flex: 1; background: #222; border: none; padding: 12px 20px; border-radius: 25px; color: #fff; }
+    .action-btn { color: var(--primary); font-size: 24px; cursor: pointer; padding: 5px; }
   </style>
 </head>
 <body>
 
   <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
+  <audio id="bombSound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+  
   <div id="bg-animation"></div>
 
+  <div id="celebrationOverlay">
+    <div class="boom-text">CONGRATULATIONS! 🎉</div>
+    <div style="font-size:100px;">🎆</div>
+  </div>
+
   <div id="loginBox">
-    <h2 class="title">SELL CARD</h2>
-    <p class="subtitle">Premium Encrypted Workspace</p>
-    <input id="name" placeholder="Codename">
-    <input id="pass" type="password" placeholder="Access Key">
-    <button class="btn-main" onclick="requestPermissionAndLogin()">ACCESS SYSTEM</button>
+    <h2 style="color:var(--primary); margin-bottom:5px;">BÓRẞÕÑ VIP</h2>
+    <p style="font-size:11px; opacity:0.6; margin-bottom:20px;">Encrypted Gateway</p>
+    <input id="loginName" placeholder="Enter Name">
+    <input id="loginPhone" type="tel" placeholder="Enter Phone (ID)">
+    <input id="loginPass" type="password" placeholder="Access Key">
+    <button class="btn-main" onclick="handleLogin()">ACCESS SYSTEM</button>
   </div>
 
-  <div id="adminPanel">
-    <div style="padding: 20px; color: var(--primary); font-weight: 600;">ACTIVE CLIENTS</div>
-    <div id="userListContainer"></div>
-  </div>
-
-  <div id="chatBox">
-    <div id="chatHeader">
-      <div style="display: flex; align-items: center;">
-        <i id="backBtn" class="fa-solid fa-chevron-left" onclick="closeChat()" style="display:none; color: var(--primary); margin-right: 15px;"></i>
-        <div class="header-title"><span id="chatTitle">VIP Support</span></div>
-      </div>
-      <i id="deleteAllBtn" class="fa-solid fa-trash-can" onclick="deleteAllMessages()"></i>
+  <div id="adminList">
+    <div class="list-header">
+      <span style="color:var(--primary); font-weight:600;">ADMIN TERMINAL</span>
+      <i class="fa-solid fa-right-from-bracket" style="color:#ff4444; cursor:pointer;" onclick="location.reload()"></i>
     </div>
+    <div id="userListContainer" style="overflow-y:auto; flex:1;"></div>
+  </div>
+
+  <div id="appContainer">
+    <header>
+      <i id="backBtn" class="fa-solid fa-arrow-left action-btn" style="display:none;" onclick="showAdminPanel()"></i>
+      <div class="avatar"><i class="fa-solid fa-user-secret"></i></div>
+      <div style="flex:1">
+        <h4 id="headerName">VIP Support</h4>
+        <p id="headerStatus" style="font-size:10px; color:var(--primary);">System Online 🟢</p>
+      </div>
+      
+      <i id="bombBtn" class="fa-solid fa-champagne-glasses" style="color:#ffd700; cursor:pointer; margin-right:15px; display:none;" onclick="triggerCelebration()"></i>
+      
+      <i class="fa-solid fa-trash-can" style="color:#ff4444; cursor:pointer;" onclick="wipeChat()"></i>
+    </header>
+
+    <div id="wallet-card">
+      <div class="val-box">
+        <p>BÓRẞÕÑ WALLET</p>
+        <h3 id="inr_val">₹ 8,42,500.00</h3>
+      </div>
+      <div class="val-box" style="text-align: right;">
+        <p>USD ASSETS</p>
+        <h3 id="usd_val">$ 100,540.00</h3>
+      </div>
+    </div>
+
     <div id="messages"></div>
-    <div id="inputArea">
-      <label for="imgInput"><i class="fa-solid fa-camera" style="color:var(--primary); font-size:24px;"></i></label>
-      <input type="file" id="imgInput" hidden accept="image/*" onchange="sendImage(this)">
-      <input id="msgInput" placeholder="Message...">
-      <button class="send-btn" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+
+    <div class="input-bar">
+      <label for="imgInp"><i class="fa-solid fa-camera action-btn"></i></label>
+      <input type="file" id="imgInp" hidden accept="image/*" onchange="sendImage(this)">
+      <input id="msgInp" placeholder="Type message..." autocomplete="off">
+      <i class="fa-solid fa-paper-plane action-btn" onclick="sendText()"></i>
     </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
   <script>
+    /* 🔥 Config */
     const firebaseConfig = {
       apiKey: "AIzaSyBEiUjtqLlT_cMCE0ba9mweak5QQp915vQ",
       authDomain: "borson-chat-web.firebaseapp.com",
@@ -155,165 +162,233 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const messaging = firebase.messaging();
 
-    function createMoneyRain() {
+    /* 💸 Animation & Wallet Logic */
+    let usd = 100540.00, inr = 842500.00;
+    setInterval(() => {
+      const diff = (Math.random() * 20 - 10);
+      usd += diff; inr += (diff * 84);
+      document.getElementById('usd_val').innerText = `$ ${usd.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+      document.getElementById('inr_val').innerText = `₹ ${inr.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    }, 2500);
+
+    function startRain() {
       const container = document.getElementById('bg-animation');
-      const icons = ['fa-sack-dollar', 'fa-bitcoin', 'fa-credit-card', 'fa-money-bill-wave', 'fa-gem'];
+      const icons = ['fa-sack-dollar', 'fa-bitcoin', 'fa-credit-card', 'fa-gem'];
       setInterval(() => {
-        const icon = document.createElement('i');
-        icon.classList.add('fa-solid', icons[Math.floor(Math.random() * icons.length)], 'falling-icon');
-        icon.style.left = Math.random() * 100 + 'vw';
-        icon.style.fontSize = (Math.random() * 20 + 15) + 'px';
-        icon.style.animationDuration = (Math.random() * 4 + 3) + 's'; 
-        container.appendChild(icon);
-        setTimeout(() => icon.remove(), 7000);
+        const i = document.createElement('i');
+        i.classList.add('fa-solid', icons[Math.floor(Math.random()*icons.length)], 'falling-icon');
+        i.style.left = Math.random()*100 + 'vw';
+        i.style.animationDuration = (Math.random()*3 + 3) + 's';
+        i.style.fontSize = (Math.random()*15 + 15) + 'px';
+        container.appendChild(i);
+        setTimeout(()=>i.remove(), 6000);
       }, 400);
     }
-    createMoneyRain();
+    startRain();
 
-    let myName = "", myID = "", isAdmin = false, activeChatID = "";
-    let notificationEnabled = false;
+    let myName, myUID, isAdmin = false, activeUID = null;
 
-    function requestPermissionAndLogin() {
-      Notification.requestPermission().then((permission) => {
-        if (permission === 'granted') {
-          notificationEnabled = true;
-          // Register VAPID Key for background notifications
-          messaging.getToken({ vapidKey: 'BMmuOngbWH5JfBpQCWDQULyoXHapgxJO2JHWZkiiHvFT-V5no5HXefOPoLmxeoEwrPTK-LYsiJnSqupgLNBTBc' })
-          .then((token) => { console.log("Notify Token Active"); })
-          .catch((err) => { console.log('Token error', err); });
-        }
-        login();
-      });
-    }
+    /* 🚀 Login Logic (Case Insensitive) */
+    function handleLogin() {
+      if("Notification" in window) Notification.requestPermission();
 
-    function login() {
-      const name = document.getElementById("name").value.trim();
-      const pass = document.getElementById("pass").value.trim();
-      if (name === "fuck" && pass === "00") {
+      const nameInput = document.getElementById('loginName').value.trim();
+      const phoneInput = document.getElementById('loginPhone').value.trim();
+      const passInput = document.getElementById('loginPass').value.trim();
+
+      // Admin Check (Case Insensitive)
+      if(nameInput.toLowerCase() === "borson_admin" && passInput === "1234") {
         isAdmin = true; myName = "Admin";
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("adminPanel").style.display = "flex";
-        loadUserList();
+        document.getElementById('loginBox').style.display = 'none';
+        showAdminPanel();
       } else {
-        isAdmin = false; myName = name;
-        myID = btoa(name + "_" + pass).replace(/=/g, ""); 
-        activeChatID = myID;
-        db.ref("users/" + myID).update({ name: myName, lastActive: Date.now() });
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("chatBox").style.display = "flex";
-        loadMessages(myID);
+        // User Check
+        if(!nameInput || !phoneInput || !passInput) return alert("Fill all details!");
+        
+        // Block wrong admin attempt
+        if(nameInput.toLowerCase() === "borson_admin" && passInput !== "1234") {
+           return alert("❌ Incorrect Admin Password!");
+        }
+
+        isAdmin = false; myName = nameInput;
+        myUID = btoa(phoneInput + "_user").replace(/=/g, ""); 
+        activeUID = myUID;
+
+        db.ref('users/' + myUID).update({ name: myName, phone: phoneInput, lastActive: Date.now() });
+
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'flex';
+        loadChat(myUID);
       }
     }
 
-    function loadUserList() {
-      db.ref("users").on("value", snap => {
-        const list = document.getElementById("userListContainer");
-        list.innerHTML = "";
+    /* 👑 Admin Panel Logic */
+    function showAdminPanel() {
+      document.getElementById('adminList').style.display = 'flex';
+      document.getElementById('appContainer').style.display = 'none';
+      
+      // FIX BUG: Stop old chat listeners
+      if(activeUID) db.ref('chats/' + activeUID).off();
+      activeUID = null;
+
+      const listContainer = document.getElementById('userListContainer');
+      db.ref('users').on('value', snap => {
+        listContainer.innerHTML = "";
+        if(!snap.exists()) {
+          listContainer.innerHTML = "<p style='text-align:center; padding:20px; color:#555;'>No users found.</p>";
+          return;
+        }
+
         snap.forEach(child => {
-          const div = document.createElement("div");
-          div.className = "user-item";
-          div.innerHTML = `<div>${child.val().name}</div><div style="color:var(--primary)">OPEN</div>`;
-          div.onclick = () => {
-            activeChatID = child.key;
-            document.getElementById("adminPanel").style.display = "none";
-            document.getElementById("chatBox").style.display = "flex";
-            document.getElementById("chatTitle").innerText = child.val().name;
-            document.getElementById("backBtn").style.display = "block";
-            document.getElementById("deleteAllBtn").style.display = "block";
-            loadMessages(child.key);
-          };
-          list.appendChild(div);
+          const u = child.val();
+          const uid = child.key;
+          
+          const div = document.createElement('div');
+          div.className = "user-card";
+          div.innerHTML = `
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+            <div style="flex:1" onclick="openUserChat('${uid}', '${u.name}')">
+              <h4 style="font-size:15px; font-weight:600;">${u.name}</h4>
+              <p style="font-size:11px; color:#888;">${u.phone || "No ID"}</p>
+            </div>
+            <div id="badge-${uid}"></div>
+            <i class="fa-solid fa-trash-can user-del-btn" onclick="deleteUser('${uid}')"></i>
+          `;
+          listContainer.appendChild(div);
+
+          db.ref('chats/' + uid).orderByChild('seen').equalTo(false).on('value', s => {
+            let count = 0;
+            s.forEach(m => { if(m.val().sender !== "Admin") count++; });
+            const b = document.getElementById('badge-' + uid);
+            if(count > 0 && b) b.innerHTML = `<span class="unread-badge">${count} NEW</span>`;
+            else if(b) b.innerHTML = "";
+          });
         });
       });
     }
 
-    function closeChat() {
-      document.getElementById("chatBox").style.display = "none";
-      document.getElementById("adminPanel").style.display = "flex";
-      activeChatID = "";
+    function openUserChat(uid, name) {
+      activeUID = uid;
+      document.getElementById('adminList').style.display = 'none';
+      document.getElementById('appContainer').style.display = 'flex';
+      document.getElementById('backBtn').style.display = 'block';
+      document.getElementById('headerName').innerText = name;
+      
+      // Enable Bomb Button for Admin
+      document.getElementById('bombBtn').style.display = 'block';
+      
+      loadChat(uid);
     }
 
-    function sendMsg() {
-      const input = document.getElementById("msgInput");
-      if (!input.value.trim()) return;
-      pushToDB(input.value.trim(), 'text');
-      if (!isAdmin) checkAndSendAutoReply(activeChatID);
-      input.value = "";
-    }
-
-    function checkAndSendAutoReply(uid) {
-      const last = localStorage.getItem("lastAutoReplyTime");
-      if (!last || (Date.now() - last > 1800000)) {
-        setTimeout(() => {
-          db.ref("chats/" + uid).push({ msg: "1000₹ = 10K +
-1500₹ = 26k+
-2000₹ = 40k+
-3000₹ = 70k+
-4000₹ = 100k+
-6000₹ = 1.5 lakh+
-10000₹ = 9lakh+", type: "text", sender: "Admin", time: Date.now() });
-          localStorage.setItem("lastAutoReplyTime", Date.now());
-        }, 1500);
-      }
-    }
-
-    function sendImage(input) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        pushToDB(e.target.result, 'img');
-        if (!isAdmin) checkAndSendAutoReply(activeChatID);
-      };
-      reader.readAsDataURL(input.files[0]);
-    }
-
-    function pushToDB(content, type) {
-      db.ref("chats/" + activeChatID).push({ msg: content, type: type, sender: isAdmin ? "Admin" : myName, time: Date.now() });
-    }
-
-    let msgRef;
-    function loadMessages(uid) {
-      const box = document.getElementById("messages");
-      box.innerHTML = "";
-      if (msgRef) msgRef.off();
-      msgRef = db.ref("chats/" + uid);
-      msgRef.on("child_added", snap => {
-        const data = snap.val();
-        if (!isAdmin && data.hiddenForUser) return;
-        
-        const isMe = data.sender === (isAdmin ? "Admin" : myName);
-
-        if (!isMe) {
-          document.getElementById("notifSound").play().catch(()=>{});
-          if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
-          if (document.hidden && notificationEnabled) {
-            new Notification("BÓRẞÕÑ ESTATE", { body: data.type === 'img' ? '📷 Photo' : data.msg });
-          }
-        }
-
-        const div = document.createElement("div");
-        div.className = isMe ? "msg right" : "msg left";
-        let content = data.type === 'img' ? `<img src="${data.msg}">` : data.msg;
-        let delBtn = (isAdmin || isMe) ? `<div class="delete-btn" onclick="deleteMessage('${uid}', '${snap.key}')"><i class="fa-solid fa-trash"></i></div>` : "";
-        div.innerHTML = `${content}<span class="time">${new Date(data.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>${delBtn}`;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-      });
-      msgRef.on("child_removed", () => loadMessages(uid));
-      msgRef.on("child_changed", () => loadMessages(uid));
-    }
-
-    window.deleteMessage = function(chatPath, msgKey) {
-      if (isAdmin) {
-        if (confirm("Delete for everyone?")) db.ref("chats/" + chatPath + "/" + msgKey).remove();
-      } else {
-        if (confirm("Hide for you?")) db.ref("chats/" + chatPath + "/" + msgKey).update({ hiddenForUser: true });
+    window.deleteUser = function(uid) {
+      if(confirm("⚠️ Permanently delete this user and all chats?")) {
+        db.ref('users/' + uid).remove();
+        db.ref('chats/' + uid).remove();
       }
     };
 
-    window.deleteAllMessages = function() {
-      if (confirm("Wipe entire chat?")) db.ref("chats/" + activeChatID).remove();
+    /* 💣 Celebration Logic */
+    window.triggerCelebration = function() {
+      const audio = document.getElementById('bombSound');
+      if(audio) audio.play();
+      
+      const overlay = document.getElementById('celebrationOverlay');
+      overlay.style.display = 'flex';
+      
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 4000); // 4 seconds animation
+    };
+
+    /* 💬 Send Logic */
+    function sendText() {
+      const inp = document.getElementById('msgInp');
+      const text = inp.value.trim();
+      if(!text) return;
+      if(isAdmin && !activeUID) return alert("Select a user first!");
+      pushToDB(text, 'text');
+      inp.value = "";
+    }
+
+    function sendImage(input) {
+      if(isAdmin && !activeUID) {
+        alert("Select a user first!");
+        input.value = "";
+        return;
+      }
+      const file = input.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) { pushToDB(e.target.result, 'img'); };
+      reader.readAsDataURL(file);
+      input.value = ""; 
+    }
+
+    function pushToDB(content, type) {
+      if(!activeUID) return;
+      db.ref('chats/' + activeUID).push({
+        msg: content, type: type, sender: myName, time: Date.now(), seen: false, hiddenForUser: false
+      });
+
+      // 🤖 FIXED AUTO REPLY (Session Based)
+      if(!isAdmin) {
+        const sentSession = sessionStorage.getItem('autoReplySent');
+        if(!sentSession) {
+          setTimeout(() => {
+            db.ref('chats/' + activeUID).push({
+              msg: "WAIT 🫸.........", type: "text", sender: "Admin", time: Date.now(), seen: false
+            });
+            sessionStorage.setItem('autoReplySent', 'true');
+          }, 1500);
+        }
+      }
+    }
+
+    /* 📥 Load Messages (BUG FIXED) */
+    function loadChat(uid) {
+      const box = document.getElementById('messages');
+      box.innerHTML = "";
+      
+      db.ref('chats/' + uid).off(); // Prevent double messages
+
+      db.ref('chats/' + uid).on('child_added', snap => {
+        const d = snap.val();
+        if(!isAdmin && d.hiddenForUser) return;
+        const isMe = d.sender === myName;
+
+        if(!isMe) {
+          document.getElementById('notifSound').play().catch(e=>{});
+          if(navigator.vibrate) navigator.vibrate(200);
+          if(isAdmin) db.ref('chats/' + uid + '/' + snap.key).update({ seen: true });
+        }
+
+        const div = document.createElement('div');
+        div.className = `msg ${isMe ? 'right' : 'left'}`;
+        let contentHtml = d.type === 'img' ? `<img src="${d.msg}">` : d.msg;
+
+        div.innerHTML = `
+          ${contentHtml}
+          <div style="font-size:9px; opacity:0.6; margin-top:5px; text-align:right;">
+            ${new Date(d.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+            ${isMe ? (d.seen ? ' <span style="color:#00ff88">✔✔</span>' : ' ✔') : ''}
+          </div>
+        `;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+      });
+      
+      db.ref('chats/' + uid).on('child_changed', () => { box.innerHTML = ""; loadChat(uid); });
+      db.ref('chats/' + uid).on('child_removed', () => { box.innerHTML = ""; loadChat(uid); });
+    }
+
+    window.wipeChat = function() {
+      if(!activeUID) return;
+      if(isAdmin) {
+        if(confirm("Delete ALL messages for everyone?")) db.ref('chats/' + activeUID).remove();
+      } else {
+        alert("Contact Admin to wipe server data.");
+      }
     };
   </script>
 </body>
